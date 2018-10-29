@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>个人中心</title>
+</head>
+<style type="text/css">
+</style>
+<body>
+	{include file="public/header" /}
+	<div class="container" style="position: relative;top: 10vh;" id="personal">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				<h3 class="panel-title">个人信息</h3>
+			</div>
+			<div class="panel-body">
+				<div class="bs-example bs-example-form" role="form">
+					<fieldset v-bind:disabled="!is_modify">
+						<div class="form-group">
+						    <label for="disabledTextInput" class="col-sm-2 control-label">昵称： </label>
+						    <div class="col-sm-10">
+						        <input type="text" class="form-control"placeholder="请输入名字" v-model="nickname" >
+						    </div>
+						</div>
+					</fieldset>
+					<div class="col-sm-10">
+						<button  class="btn btn-primary" v-on:click="click_modify" v-if="!is_modify">修改</button>
+						<button class="btn btn-success" v-on:click="click_modify" v-else>保存</button>
+					</div>
+				</div>
+			</div>
+			<div class="panel-body">
+				P.S.个人中心没有功能，快回去参与话题，老是搞这些没有用的东西！
+			</div>
+		</div>
+		<div class="panel panel-info">
+			<div class="panel-heading">我的投票</div>
+			<table class="table" v-if="has_vote" style="transition-duration: 0.5s;">
+				<th>标题</th><th>投票 </th>
+				<tr v-for="(vote_list, key) in vote_lists"><td>{{key + 1}}、 {{vote_list.vote_title}} </td><td> {{vote_list.vote}} </td></tr>
+			</table>
+			<table class="table" v-else-if="!has_vote">
+				<th>标题</th><th>投票 </th>
+				<tr><td>暂无投票纪录啊扑街，还不去<span style="color: red;font-weight: bold;" v-on:click="toIndex()">首页</span>投票吗？？？</td></tr>
+			</table>
+			<div style="text-align: center;">
+				<ul class="pagination">
+					<li v-on:click="votes_list('min')"><a>&laquo;</a></li>
+					<li v-for="key in vote_lists_length" :class="{active: key == pagination_index}" v-on:click="votes_list(key)"><a>{{key}}</a></li>
+					<li v-on:click="votes_list('max')"><a>&raquo;</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</body>
+
+<script type="text/javascript">
+var personal = new Vue({
+	el: '#personal',
+	data:{
+		nickname: '{$nickname}',
+		nickname_hold: '{$nickname}',
+		vote_lists: [],
+		vote_lists_length: 0,
+		has_vote: false,
+		is_modify: false,
+		pagination_index: 1,
+	},
+	created(){
+		this.votes_list(0);
+	},
+	methods:{
+		votes_list(e){
+			var that = this;
+			if(e == that.pagination_index){
+				return;
+			}
+			if (e == 'min') {
+				e = 0;
+				if(that.pagination_index == 1){
+					return;
+				}
+			}else if (e == 'max') {
+				e = that.vote_lists_length;
+				if(that.pagination_index == that.vote_lists_length){
+					return;
+				}
+			}
+			$.ajax({
+				type: 'POST',
+				url: "/index/Personal/vote_lists",
+				data:{
+					user_id: '{$loginId}',
+					index: e,
+				},
+				success(res){
+					var res = JSON.parse(res);
+					console.log(res);
+					if(res.status == 404){
+						return;
+					}
+					that.has_vote = true;
+					that.vote_lists = res.data;
+					that.vote_lists_length = Math.ceil( res.vote_lists_length / res.page_num);
+					if(e != 0){
+						that.pagination_index = e;
+					}else{
+						that.pagination_index = 1;
+					}
+				}
+			})
+		},
+		toIndex(){
+			window.location.href = '/index/Index/index';
+		},
+		click_modify(){
+			var that = this,
+				is_modify = that.is_modify,
+				nickname = that.nickname;
+			if(is_modify){
+				if(nickname == ''){
+					alert('你都没写昵称 你保存个鸡儿???');
+					return;
+				}
+				if(that.nickname_hold == nickname){
+					that.is_modify = !is_modify;
+					return;
+				}
+				
+				$.ajax({
+					type:'POST',
+					url: '/index/Personal/nickname_modiify',
+					data:{ user_id: '{$loginId}', nickname: nickname},
+					success: function(res){
+						var res = JSON.parse(res);
+						console.log(res);
+						if(res.status == 200){
+							that.is_modify = !is_modify;
+							// that.nickname_hold = nickname;
+						}
+						alert(res.msg);
+					}
+				})
+			}
+			that.is_modify = !is_modify;
+		},
+	}
+})
+</script>
+</html>

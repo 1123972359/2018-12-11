@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>不定时话题</title>
+</head>
+<body>
+	{include file="public/header" /}
+<div id="indexApp">
+	<div style="background:url('__CSS__/img/timg.jpg') !important;background-repeat:no-repeat !important; background-size:100% 100% !important;">
+		<div class="container" style="color: #eee;">
+			<h5 style="margin-top: 70px;">不定时话题</h5>
+			<h5>——主题不定时</h5>
+			<h5>——内容不定时</h5>
+			<h5>——回复不定时</h5>
+			<h5>——总之乜卵都不定时</h5>
+		</div>
+	</div>
+	<div class="container" style="margin-top: 20px;">
+		<div class="panel panel-info">
+		    <div class="panel-heading">
+		        <h3 class="panel-title">今日话题：<span style="color: #FF7F00 !important;"> {{vote_data['vote_name']}}</span></h3>
+		    </div>
+		    <div class="panel-body">{{vote_data['vote_content']}}</div>
+		</div>
+		<div class="panel panel-info">
+		    <div class="panel-heading">
+		        <h3 class="panel-title">今日投票：<span style="color: #FF7F00 !important;"> {{vote_data['vote_title']}}</span></h3>
+		    </div>
+		    <div class="panel-body" v-if="is_vote == 0">
+				<button type="button" class="btn btn-info" v-on:click="to_vote(2)">{{vote_data['vote_text2']}}</button>
+				<button type="button" class="btn btn-success" v-on:click="to_vote(1)">{{vote_data['vote_text1']}}</button>
+		    </div>
+		    <div class="panel-body" v-else >
+		        <h5 class="panel-title">
+		        	<p>{{vote_data['vote_text2']}}：<span style="color: #5BC0DE !important;"> {{count_2}}</span> 人</p>
+		        	<p>{{vote_data['vote_text1']}}：<span style="color: #5CB85C !important;"> {{count_1}}</span> 人</p>
+		        </h5>
+				<div class="progress" style="margin-top: 2vh;">
+					<div class="progress-bar progress-bar-info" role="progressbar"
+						 aria-valuenow="{{count_2_percent}}" aria-valuemin="0" :aria-valuemax="100"
+						 :style="{width: count_2_percent+'%'}">
+					</div>
+				</div>
+				<div class="progress">
+					<div class="progress-bar progress-bar-success" role="progressbar"
+						 aria-valuenow="{{count_1_percent}}" aria-valuemin="0" :aria-valuemax="100"
+						 :style="{width: count_1_percent+'%'}">
+					</div>
+				</div>
+		    </div>
+		</div>
+	</div>
+</div>
+</body>
+
+<script type="text/javascript">
+var indexApp = new Vue({
+	el: '#indexApp',
+	data:{
+		vote_data: [],
+		loginText:'',
+		loginId: '{$loginId}',
+	  	nickname: '{$nickname}',
+	  	is_vote: 0,
+	  	count: 0,
+	  	count_1: 0,
+	  	count_2: 0,
+	  	count_1_percent: 0,
+	  	count_2_percent: 0,
+	},
+	created(){
+		var that = this;
+		$.ajax({
+			type:"GET",
+			url: "/index/Index/vote_load",
+			success:res=>{
+				console.log(JSON.parse(res));
+		      	var res = JSON.parse(res);
+		      	if(res.status == 200){
+		      		that.vote_data = res.data.vote;
+		      		// 计算投票总数
+		      		that.vote_count(res.data.count, res.data.count_1, res.data.count_2);
+
+		      		if (that.loginId != '') {
+						$.ajax({
+							type:"POST",
+							url: "/index/Index/vote_user",
+							data:{
+								user_id: that.loginId,
+								vote_id: that.vote_data['id'],
+							},
+							success:ress=>{
+								console.log(JSON.parse(ress));
+						      	var ress = JSON.parse(ress);
+						      	if (ress.status == 200) {
+						      		that.is_vote = 1;
+						      	} else {
+						      		console.log(ress.msg);
+						      	}
+							}
+						})
+		      		}
+		      	}else{
+		      		console.log(res.msg);
+		      	}
+			}
+		})
+	},
+	methods:{
+		vote_count(count, count_1, count_2, new_count = 0){
+			var that = this;
+			if (new_count == 1) {
+				count += 1;
+				count_1 += 1;
+			}else if (new_count == 2){
+				count += 1;
+				count_2 += 1;
+			}
+			console.log(count+'-'+count_1+'-'+count_2);
+
+			that.count = count;
+			that.count_1 = count_1;
+			that.count_2 = count_2;
+			that.count_1_percent = (count_1 / count ) * 100;
+			that.count_2_percent = (count_2 / count ) * 100;
+		},
+		to_vote(e){
+			var that = this;
+			if(that.nickname == ''){
+				alert('请先于右上角 注册/登录 !');
+				that.loginText = '登录';
+				return;
+			}
+
+			$.ajax({
+				type:"POST",
+				url: "/index/Index/to_vote",
+				data:{
+					user_id: that.loginId,
+					vote_id: that.vote_data['id'],
+					vote: e
+				},
+				success:res=>{
+					console.log(JSON.parse(res));
+			      	var res = JSON.parse(res);
+			      	if(res.status == 200){
+			      		alert(res.msg);
+						that.is_vote = 1;
+						that.vote_count(that.count, that.count_1, that.count_2, e);
+			      	}else{
+			      		alert(res.msg);
+			      	}
+				}
+			})
+		}
+	}
+})
+</script>
+</html>

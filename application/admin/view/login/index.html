@@ -1,0 +1,125 @@
+﻿  <!DOCTYPE html>
+  <html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+  <title>产品部FAQ系统</title>
+  <!-- <script src="js/sweet-alert.js"></script> -->
+  <script src="__JS__/sweetalert.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="__CSS__/main.css">
+<link rel="stylesheet" type="text/css" href="__CSS__/crowd.css">
+<!-- <script src="js/jquery-3.3.1.min.js"></script> -->
+  <link rel="stylesheet" href="__CSS__/sweetalert.css">
+
+  <!-- <link rel="stylesheet" href="css/sweet-alert.css"> -->
+  <style media="screen">
+
+    .login{
+      position: fixed;
+margin: auto;
+width: 300px;
+height: 200px;
+text-align: center;
+top: 0;
+bottom: 0;
+left: 0;
+right: 0;
+line-height: 50px;
+    }
+    .btn{
+      margin-top: 40px;
+    }
+  </style>
+  </head>
+  <body>
+  <header>
+  <div class="bg">
+      <canvas id="display"></canvas>
+      <div id="blachole"></div>
+</div>
+<div class="login">
+  <h1>Bearsoft Faq系统</h1>
+  <button class="btn" type="button" name="button" onclick="login()">点击登录 </button>
+</div>
+</header>
+<script src="__JS__/jquery.1.12.4.min.js"></script>
+<script type="text/javascript" src="__JS__/constellation.js"></script>
+</body>
+  <script type="text/javascript">
+
+function login(){
+
+  swal({
+      title: "Bearsoft Faq系统",
+      text: "先登录吧少年",
+      type: "input",//warning,input,
+      showCancelButton: true,
+      closeOnConfirm: false,
+      animation: "slide-from-top",
+      inputPlaceholder: "输入登录密码"
+  }, function(inputValue) {
+      if (inputValue === false)
+          return false;
+      if (inputValue === "") {
+          swal.showInputError("要输入登录密码啊少年!");
+          return false
+      }
+      if(inputValue){
+        $.ajax({
+          url:'/',
+          type:'post',
+          data:{"pw":inputValue},
+          success:function (d){
+            if(d==1){
+
+              swal("棒极了!", "你真优秀！", "success");
+              setTimeout(function(){window.location.href="/";},500);
+
+            }else{
+                //swal("出错了!", "重新输入吧！", "error");
+                // window.location.href="/";
+                swal({
+
+                  title: "密码错误了！",
+
+                  text: "重新输入吧！",
+
+                  type: "error",
+
+                  showCancelButton: false,
+
+                  confirmButtonColor: "#DD6B55",
+
+                  confirmButtonText: "知道了!",
+
+                  closeOnConfirm: false
+
+                },
+
+                function(){
+                  swal("请稍等!", "正在跳转至登录页面...", "success");
+                window.location.href="/";
+                //  swal("Deleted!", "Your imaginary file has been deleted.", "success");
+
+                });
+            }
+          }
+        })
+
+
+
+
+      //  login();
+      }
+    //  login()
+  });
+  $("input").attr('type','password');
+}
+              window.onload = function(){
+                    login();
+                    $("input").attr('type','password');
+          }
+
+
+
+  </script>
+</html>
