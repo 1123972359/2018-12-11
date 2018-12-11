@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>不定时话题</title>
+</head>
+<style type="text/css">
+.content{
+	padding:0 15px;
+	margin-top: 60px;
+}
+.toolbar{
+	padding:0 15px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	display: flex;
+	flex-wrap: wrap;
+}
+.text{
+	padding:0 15px;
+	min-height: 300px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+</style>
+<body>
+	{include file="public/header" /}
+
+	<div class="content" id="bokeApp">
+		<ul class="breadcrumb" style="position: relative;top: -3px;margin-bottom: 0px;">
+			<li><a href="/index/index/index">首页</a></li>
+			<li><a href="/index/Personal/personal_index">个人中心</a></li>
+			<li class="active">博客</li>
+		</ul>
+		<h5 style="padding:0 15px;">不定时博客</h5>
+		<div class="input-group input-group" style="margin-bottom: 10px;">
+			<span class="input-group-addon">标题</span>
+			<input type="text" class="form-control" placeholder="这里记得写标题啊扑街！" v-model="editorTitle">
+		</div>
+		<div id="toolbar" class="toolbar"></div>
+		<div style="padding: 5px 0; color: #ccc;">
+			<p style="font-size: 1px;text-align: center;">P.S.因为这个叼毛对formdata一直弄不了，所以设置了每次只能选择一张图片上传，如需上传多张图片，那你就一张一张上传咯</p>
+		</div>
+		<div id="editor" class="text">
+	        <p>快来写下今天的博客吧~</p>
+	    </div>
+	    <div style="padding: 15px;text-align: right;">
+	    	<button id="toDraft" type="button" class="btn btn-info" v-on:click="saveTo(1);">保存为草稿</button>
+	    	<button id="toSave" type="button" class="btn btn-success"  v-on:click="saveTo(0);">发布</button>
+	    </div>
+
+		<!-- 模态框（Modal） -->
+		<div class="modal fade" id="saveToModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+							&times;
+						</button>
+						<h4 class="modal-title" id="myModalLabel">
+							你确定要{{saveToText}}吗？
+						</h4>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">取消
+						</button>
+						<button type="button" class="btn btn-primary" v-on:click="saveToSure">
+							确定
+						</button>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal -->
+		</div>
+
+	</div>
+
+	<div style="width: 100%;margin: 0 auto;color: #999999;font-size: 12px;margin-top: 10px;">
+		<div style="text-align: center;">©2018 不定时话题 粤ICP备18143213号</div>
+	</div>
+</body>
+
+<script type="text/javascript" src="__JS__/wangEditor.min.js"></script>
+<script type="text/javascript">
+var bokeApp = new Vue({
+	el: '#bokeApp',
+	data:{
+		editorTitle: '',
+		editorContent: '',
+		saveToText: "",
+		saveToBtn: true,
+	},
+	created(){
+
+	},
+	mounted(){
+		var that = this;
+		var E = window.wangEditor;
+
+		var editor = new E('#toolbar', '#editor');
+
+		editor.customConfig.zIndex = 100;
+
+		editor.customConfig.uploadImgServer = '/index/Bokeeditor/upload';
+
+		editor.customConfig.uploadImgMaxLength = 5;
+
+		editor.customConfig.uploadFileName = 'image';
+
+		editor.customConfig.showLinkImg = false;
+
+		editor.customConfig.menus = [
+		    'head',  // 标题
+		    'bold',  // 粗体
+		    'fontSize',  // 字号
+		    'fontName',  // 字体
+		    'italic',  // 斜体
+		    'underline',  // 下划线
+		    'strikeThrough',  // 删除线
+		    'foreColor',  // 文字颜色
+		    'backColor',  // 背景颜色
+		    'link',  // 插入链接
+		    // 'list',  // 列表
+		    'justify',  // 对齐方式
+		    'quote',  // 引用
+		    'emoticon',  // 表情
+		    'image',  // 插入图片
+		    'table',  // 表格
+		    // 'video',  // 插入视频
+		    // 'code',  // 插入代码
+		    'undo',  // 撤销
+		    'redo'  // 重复
+		]
+
+		editor.customConfig.debug = true;
+
+		// 关闭粘贴样式的过滤
+		editor.customConfig.pasteFilterStyle = false;
+		// 忽略粘贴内容中的图片
+		editor.customConfig.pasteIgnoreImg = true;
+		// 自定义处理粘贴的文本内容
+		// editor.customConfig.pasteTextHandle = function (content) {
+		//     // content 即粘贴过来的内容（html 或 纯文本），可进行自定义处理然后返回
+		//     return content + '<p>在粘贴内容后面追加一行</p>'
+		// }
+		
+		editor.customConfig.onchange = function (html) {
+	        // html 即变化之后的内容
+	        that.editorContent = html;
+	    }
+
+		editor.create();
+	},
+	methods:{
+		saveTo(type){
+			var that = this;
+			if(type == 0){
+				// toSave
+				that.is_draft = 0;
+				that.saveToText = '发布';
+			}else{
+				that.is_draft = 1;
+				that.saveToText = '保存为草稿';
+			}
+			$('#saveToModel').modal('show');
+		},
+		saveToSure(){
+			var that = this,
+				uid = '{$loginId}';
+			if(!that.editorTitle){
+				alert('标题都不写的吗???');
+				return;
+			}
+			if(!that.editorContent){
+				alert('正文都不写的吗???');
+				return;
+			}
+			if(!that.saveToBtn){
+				return;
+			}
+			if(!uid){
+				alert('登录状态过期，请重新登录！');
+				return;
+			}
+
+			that.saveToBtn = false;
+
+			$.ajax({
+				method: 'post',
+				url: '/index/Bokeeditor/saveBoke',
+				data:{
+					uid: uid,
+					title: that.editorTitle,
+					content: that.editorContent,
+					is_draft: that.is_draft
+				},
+				success:res=>{
+					that.saveToBtn = true;
+					console.log(JSON.parse(res));
+					alert(JSON.parse(res).err_msg);
+					if(JSON.parse(res).err_code == 200){
+						$('#saveToModel').modal('hide');
+						window.location.href = '/index/Personal/personal_index';
+					}
+				}
+			})
+		
+			// console.log(editor.txt.html());
+			// console.log(editor.txt.text());
+		},
+	}
+})
+</script>
+</html>

@@ -8,6 +8,10 @@
 <body>
 	{include file="public/header" /}
 	<div class="container" style="position: relative;top: 10vh;" id="personal">
+		<ul class="breadcrumb" style="position: relative;top: -9px;margin-bottom: 0px;">
+			<li><a href="/index/index/index">首页</a></li>
+			<li class="active">个人中心</li>
+		</ul>
 		<div class="panel panel-primary">
 			<div class="panel-heading">
 				<h3 class="panel-title">个人信息</h3>
@@ -15,39 +19,70 @@
 			<div class="panel-body">
 				<div class="bs-example bs-example-form" role="form">
 					<fieldset v-bind:disabled="!is_modify">
-						<div class="form-group">
-						    <label for="disabledTextInput" class="col-sm-2 control-label">昵称： </label>
-						    <div class="col-sm-10">
-						        <input type="text" class="form-control"placeholder="请输入名字" v-model="nickname" >
-						    </div>
+						<div class="input-group">
+							<span class="input-group-addon">昵称</span>
+							<!-- <label for="firstname" class="col-sm-2 control-label">昵称： </label> -->
+							<!-- <div class="col-sm-10"> -->
+								<input type="text" class="form-control" placeholder="请输入名字" v-model="nickname" >
+							<!-- </div> -->
 						</div>
 					</fieldset>
-					<div class="col-sm-10">
-						<button  class="btn btn-primary" v-on:click="click_modify" v-if="!is_modify">修改</button>
+					<div class="col-sm-10" style="margin: 10px -15px 0 0;text-align: right;">
+						<button class="btn btn-primary" v-on:click="click_modify" v-if="!is_modify">修改</button>
 						<button class="btn btn-success" v-on:click="click_modify" v-else>保存</button>
+						<button class="btn btn-info" v-on:click="toBoke">写博客</button>
 					</div>
 				</div>
 			</div>
-			<div class="panel-body">
+<!-- 			<div class="panel-body">
 				P.S.个人中心没有功能，快回去参与话题，老是搞这些没有用的东西！
-			</div>
+			</div> -->
 		</div>
 		<div class="panel panel-info">
 			<div class="panel-heading">我的投票</div>
 			<table class="table" v-if="has_vote" style="transition-duration: 0.5s;">
 				<th>标题</th><th>投票 </th>
-				<tr v-for="(vote_list, key) in vote_lists"><td>{{key + 1}}、 {{vote_list.vote_title}} </td><td> {{vote_list.vote}} </td></tr>
+				<tr v-for="(vote_list, key) in vote_lists"><td> {{vote_list.vote_title}} </td><td> {{vote_list.vote}} </td></tr>
 			</table>
 			<table class="table" v-else-if="!has_vote">
 				<th>标题</th><th>投票 </th>
-				<tr><td>暂无投票纪录啊扑街，还不去<span style="color: red;font-weight: bold;" v-on:click="toIndex()">首页</span>投票吗？？？</td></tr>
+				<tr><td>暂无投票纪录啊扑街，还不去<span style="color: red;font-weight: bold;" v-on:click="toIndex()">首页</span>投票吗？？？</td><td></td></tr>
 			</table>
 			<div style="text-align: center;">
 				<ul class="pagination">
-					<li v-on:click="votes_list('min')"><a>&laquo;</a></li>
-					<li v-for="key in vote_lists_length" :class="{active: key == pagination_index}" v-on:click="votes_list(key)"><a>{{key}}</a></li>
-					<li v-on:click="votes_list('max')"><a>&raquo;</a></li>
+					<li style="cursor: pointer;" v-on:click="votes_list('min')"><a>&laquo;</a></li>
+					<li style="cursor: pointer;" v-for="key in vote_lists_length" :class="{active: key == pagination_index}" v-on:click="votes_list(key)">
+						<a>{{key}}</a>
+					</li>
+					<li style="cursor: pointer;" v-on:click="votes_list('max')"><a>&raquo;</a></li>
 				</ul>
+			</div>
+		</div>
+		<div class="panel panel-success">
+			<div class="panel-heading">
+				<span>我的博客 </span>
+				<span style="float: right;cursor: pointer;"> 草稿箱 {{is_draft_length}}</span>
+			</div>
+			<table class="table" style="transition-duration: 0.5s;">
+				<th>标题</th><th>日期 </th>
+				<tr v-for="(b, key) in boke_lists"><td> {{b.title}}</td><td>{{b.update_time}}</td></tr>
+			</table>
+			<table class="table" v-else-if="!has_boke">
+				<th>标题</th><th>日期 </th>
+				<tr><td>你都没有写过博客，你看个鸡儿<br/>还不快点击这里去<span style="color: red;font-weight: bold;" v-on:click="toBoke()">写博客</span>吗？？？</td><td></td></tr>
+			</table>
+			<div class="panel-body">
+				<div class="bs-example bs-example-form" role="form">
+					<div style="text-align: center;">
+						<ul class="pagination">
+							<li style="cursor: pointer;" v-on:click="boke_list(1)"><a>&laquo;</a></li>
+							<li style="cursor: pointer;" v-for="key in boke_lists_length" :class="{active: key == (boke_index)}" v-on:click="boke_list(key)">
+								<a>{{key}}</a>
+							</li>
+							<li style="cursor: pointer;" v-on:click="boke_list('max')"><a>&raquo;</a></li>
+						</ul>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -60,15 +95,64 @@ var personal = new Vue({
 		nickname: '{$nickname}',
 		nickname_hold: '{$nickname}',
 		vote_lists: [],
+		boke_lists: [],
 		vote_lists_length: 0,
+		boke_lists_length: 0,
+		is_draft_length: "[" + 0 + "]",
 		has_vote: false,
+		has_boke: false,
 		is_modify: false,
 		pagination_index: 1,
+		boke_index: 1,
 	},
 	created(){
 		this.votes_list(0);
+		this.boke_list(0);
 	},
 	methods:{
+		boke_list(e){
+			var that = this;
+			if(that.boke_index == e){
+				return;
+			}
+			if(e == 0){
+				e = 1;
+			}else if(e == 'max'){
+				e = Math.ceil(that.boke_lists_length / 5);
+			}
+			that.boke_index = e;
+			$.ajax({
+				type: 'POST',
+				url: "/index/Personal/boke_list",
+				data:{
+					user_id: '{$loginId}',
+				},
+				success(res){
+					var res = JSON.parse(res);
+					if(res.status != 200){
+						return;
+					}
+					var arr = [];
+					var arr2 = [];
+					var draft_arr = [];
+					for(var i = 0; i < res.data.length; i++){
+						if(res.data[i].is_draft === "0"){
+							arr.push(res.data[i]);
+						}else{
+							draft_arr.push(res.data[i]);
+						}
+					}
+					for(var i = 0; i < arr.length; i++){
+						if( i >= (that.boke_index - 1) * 5 && i < (that.boke_index) * 5){
+							arr2.push(arr[i]);
+						}
+					}
+					that.boke_lists = arr2;
+					that.is_draft_length = "[" +  draft_arr.length + "]";
+					that.boke_lists_length = Math.ceil(res.boke_list_length / 5);
+				}
+			})
+		},
 		votes_list(e){
 			var that = this;
 			if(e == that.pagination_index){
@@ -94,7 +178,6 @@ var personal = new Vue({
 				},
 				success(res){
 					var res = JSON.parse(res);
-					console.log(res);
 					if(res.status == 404){
 						return;
 					}
@@ -143,6 +226,9 @@ var personal = new Vue({
 			}
 			that.is_modify = !is_modify;
 		},
+		toBoke(){
+			window.location.href = "/index/bokeeditor/index";
+		}
 	}
 })
 </script>

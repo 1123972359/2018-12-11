@@ -163,5 +163,5 @@ class Index extends Controller
 
         $status = array('status' => 200, 'msg' => '投票成功！');
         return json_encode($status);
-}
+    }
 }

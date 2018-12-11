@@ -14,6 +14,25 @@ class Personal extends controller
 		return $view -> fetch('personal');
 	}
 
+    public function boke_list(){
+        $request = Request::instance();
+        $post = $request -> post();
+        if (!$post) {
+            $status = array('status' => 404, 'msg' => 'post is not exist');
+            return json_encode($status);
+        }
+
+        $data = Db::table('tb_boke') -> where(array('uid' => $post['user_id'])) -> field('id, title, update_time, is_draft') -> select();
+
+        if(!$data){
+            $status = array('status' => 405, 'msg' => 'null', 'data' => []);
+            return json_encode($status);
+        }
+
+        $status = array('status' => 200, 'msg' => 'success', 'data' => array_reverse($data), 'boke_list_length' => count($data));
+        return json_encode($status);
+    }
+
 	public function vote_lists() {
 		$request = Request::instance();
 		$post = $request -> post();
@@ -32,7 +51,7 @@ class Personal extends controller
 
     	$vote_datas = [];
 
-        $num = 4;
+        $num = 5;
 
         if ($post['index'] == 1 || $post['index'] == 0) {
             $big_num = $num;

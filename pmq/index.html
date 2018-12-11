@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	
+	<script type="text/javascript">
+
+	function show(){
+	var str="<item><issue>715384</issue><numbers>7,6,10,4,5,1,2,3,8,9</numbers><time>2018-11-17 20:12:30</time></item><item><issue>2</issue><numbers>1,2,10,4,5,1,2,3,8,9</numbers><time>2017-11-17 20:12:30</time></item>";
+	var reg =/<item><issue>([\d]+?)<\/issue><numbers>([\d\,]+?)<\/numbers><time>([\d\:\-\ ]+?)<\/time><\/item>/ig;
+var m;
+m=str.match(reg)
+
+
+
+ return {
+	'issue':m[1],
+	'numbers':m[2],
+	'time':m[3]
+}
+}
+
+console.log(show());
+
+	</script>
+1111
+</body>
+</html>
+
+
+
+
+
