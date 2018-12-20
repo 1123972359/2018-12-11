@@ -35,13 +35,13 @@ install:
 
 script:
   ## LINT
-  - find . -path ./vendor -prune -o -type f -name \*.php -exec php -l {} \;
+  - find . -path ./Utility -prune -o -type f -name \*.php -exec php -l {} \;
   ## PHP Copy/Paste Detector
-  - vendor/bin/phpcpd --verbose --exclude vendor ./ || true
+  - Utility/bin/phpcpd --verbose --exclude Utility ./ || true
   ## PHPLOC
-  - vendor/bin/phploc --exclude vendor ./
+  - Utility/bin/phploc --exclude Utility ./
   ## PHPUNIT
-  - vendor/bin/phpunit --coverage-clover=coverage.xml --configuration=phpunit.xml
+  - Utility/bin/phpunit --coverage-clover=coverage.xml --configuration=phpunit.xml
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

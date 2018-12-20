@@ -1,7 +1,7 @@
 <?php
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
- * File for vendor customisation, you can change here paths or some behaviour,
+ * File for Utility customisation, you can change here paths or some behaviour,
  * which vendors such as Linux distibutions might want to change.
  *
  * For changing this file you should know what you are doing. For this reason

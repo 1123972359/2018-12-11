@@ -11,7 +11,7 @@ if (! defined('PHPMYADMIN')) {
 }
 
 /**
- * Load vendor configuration.
+ * Load Utility configuration.
  */
 require './libraries/vendor_config.php';
 

@@ -1,6 +1,7 @@
 <?php
 namespace app\index\controller;
 
+use app\Utility\Response;
 use think\Controller;
 use think\View;
 use think\Db;
@@ -163,5 +164,11 @@ class Index extends Controller
 
         $status = array('status' => 200, 'msg' => '投票成功！');
         return json_encode($status);
+    }
+
+
+    public function test()
+    {
+        Response::create();
     }
 }
