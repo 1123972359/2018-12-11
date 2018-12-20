@@ -4,10 +4,6 @@
 	<title>不定时话题</title>
 </head>
 <style type="text/css">
-.content{
-	padding:0 15px;
-	margin-top: 60px;
-}
 .toolbar{
 	padding:0 15px;
 	border: 1px solid #ccc;
@@ -25,28 +21,37 @@
 <body>
 	{include file="public/header" /}
 
-	<div class="content" id="bokeApp">
+	<div class="container" id="bokeApp" style="position: relative; top: 69px;">
 		<ul class="breadcrumb" style="position: relative;top: -3px;margin-bottom: 0px;">
 			<li><a href="/index/index/index">首页</a></li>
 			<li><a href="/index/Personal/personal_index">个人中心</a></li>
 			<li class="active">博客</li>
 		</ul>
-		<h5 style="padding:0 15px;">不定时博客</h5>
-		<div class="input-group input-group" style="margin-bottom: 10px;">
-			<span class="input-group-addon">标题</span>
-			<input type="text" class="form-control" placeholder="这里记得写标题啊扑街！" v-model="editorTitle">
+
+		<div class="panel panel-default" style="margin-top: 8px;">
+			<div class="panel-heading">
+				<h3 id="boke_title" class="panel-title">
+					不定时博客
+				</h3>
+			</div>
+			<div id="boke_content" class="panel-body">
+				<div class="input-group input-group" style="margin-bottom: 10px;">
+					<span class="input-group-addon">标题</span>
+					<input type="text" class="form-control" placeholder="这里记得写标题啊扑街！" v-model="editorTitle">
+				</div>
+				<div id="toolbar" class="toolbar" style="margin-top: 16px;"></div>
+				<div style="padding: 5px 0; color: #ccc;">
+					<p style="font-size: 1px;text-align: center;">P.S.因为这个叼毛对formdata一直弄不了，所以设置了每次只能选择一张图片上传，如需上传多张图片，那你就一张一张上传咯</p>
+				</div>
+				<div id="editor" class="text">
+			        <p>快来写下今天的博客吧~</p>
+			    </div>
+			    <div style="padding: 15px;text-align: right;">
+			    	<button id="toDraft" type="button" class="btn btn-info" v-on:click="saveTo(1);">保存为草稿</button>
+			    	<button id="toSave" type="button" class="btn btn-success"  v-on:click="saveTo(0);">发布</button>
+			    </div>
+			</div>
 		</div>
-		<div id="toolbar" class="toolbar"></div>
-		<div style="padding: 5px 0; color: #ccc;">
-			<p style="font-size: 1px;text-align: center;">P.S.因为这个叼毛对formdata一直弄不了，所以设置了每次只能选择一张图片上传，如需上传多张图片，那你就一张一张上传咯</p>
-		</div>
-		<div id="editor" class="text">
-	        <p>快来写下今天的博客吧~</p>
-	    </div>
-	    <div style="padding: 15px;text-align: right;">
-	    	<button id="toDraft" type="button" class="btn btn-info" v-on:click="saveTo(1);">保存为草稿</button>
-	    	<button id="toSave" type="button" class="btn btn-success"  v-on:click="saveTo(0);">发布</button>
-	    </div>
 
 		<!-- 模态框（Modal） -->
 		<div class="modal fade" id="saveToModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

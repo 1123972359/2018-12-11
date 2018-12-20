@@ -4,10 +4,17 @@
 	<title>个人中心</title>
 </head>
 <style type="text/css">
+.ttr{
+	cursor: pointer;
+}
+.ttr:hover{
+	transition-duration: 0.3s;
+	box-shadow: 2px 2px 10px #95CAFE;
+}
 </style>
 <body>
 	{include file="public/header" /}
-	<div class="container" style="position: relative;top: 10vh;" id="personal">
+	<div class="container" style="position: relative;top: 69px;" id="personal">
 		<ul class="breadcrumb" style="position: relative;top: -9px;margin-bottom: 0px;">
 			<li><a href="/index/index/index">首页</a></li>
 			<li class="active">个人中心</li>
@@ -20,17 +27,16 @@
 				<div class="bs-example bs-example-form" role="form">
 					<fieldset v-bind:disabled="!is_modify">
 						<div class="input-group">
-							<span class="input-group-addon">昵称</span>
+							<span class="input-group-addon">不定时名字啊</span>
 							<!-- <label for="firstname" class="col-sm-2 control-label">昵称： </label> -->
 							<!-- <div class="col-sm-10"> -->
 								<input type="text" class="form-control" placeholder="请输入名字" v-model="nickname" >
 							<!-- </div> -->
 						</div>
 					</fieldset>
-					<div class="col-sm-10" style="margin: 10px -15px 0 0;text-align: right;">
+					<div class="col-sm-10" style="margin: 10px 0 0 0;text-align: right;width: 100%;padding: 0;">
 						<button class="btn btn-primary" v-on:click="click_modify" v-if="!is_modify">修改</button>
 						<button class="btn btn-success" v-on:click="click_modify" v-else>保存</button>
-						<button class="btn btn-info" v-on:click="toBoke">写博客</button>
 					</div>
 				</div>
 			</div>
@@ -42,7 +48,7 @@
 			<div class="panel-heading">我的投票</div>
 			<table class="table" v-if="has_vote" style="transition-duration: 0.5s;">
 				<th>标题</th><th>投票 </th>
-				<tr v-for="(vote_list, key) in vote_lists"><td> {{vote_list.vote_title}} </td><td> {{vote_list.vote}} </td></tr>
+				<tr class="ttr" v-for="(vote_list, key) in vote_lists"><td> {{vote_list.vote_title}} </td><td> {{vote_list.vote}} </td></tr>
 			</table>
 			<table class="table" v-else-if="!has_vote">
 				<th>标题</th><th>投票 </th>
@@ -61,11 +67,12 @@
 		<div class="panel panel-success">
 			<div class="panel-heading">
 				<span>我的博客 </span>
-				<span style="float: right;cursor: pointer;"> 草稿箱 {{is_draft_length}}</span>
+				<span style="cursor: pointer;margin-left: 10px;" v-on:click="toBoke">写博客</span>
+				<span style="cursor: pointer;float: right;"> 草稿箱 {{is_draft_length}}</span>
 			</div>
-			<table class="table" style="transition-duration: 0.5s;">
+			<table class="table" v-if="boke_lists" style="transition-duration: 0.5s;">
 				<th>标题</th><th>日期 </th>
-				<tr v-for="(b, key) in boke_lists"><td> {{b.title}}</td><td>{{b.update_time}}</td></tr>
+				<tr class="ttr" v-for="(b, key) in boke_lists" v-on:click="bokeInfo(b.id)"><td> {{b.title}}</td><td>{{b.update_time}}</td></tr>
 			</table>
 			<table class="table" v-else-if="!has_boke">
 				<th>标题</th><th>日期 </th>
@@ -84,6 +91,10 @@
 					</div>
 				</div>
 			</div>
+		</div>
+
+		<div style="width: 100%;margin: 0 auto;color: #999999;font-size: 12px;margin-top: 10px;">
+			<div style="text-align: center;">©2018 不定时话题 粤ICP备18143213号</div>
 		</div>
 	</div>
 </body>
@@ -228,6 +239,9 @@ var personal = new Vue({
 		},
 		toBoke(){
 			window.location.href = "/index/bokeeditor/index";
+		},
+		bokeInfo(id){
+			window.location.href = "/index/bokeeditor/toBokeInfo?isComeFromPerson=1&id=" + id;
 		}
 	}
 })
