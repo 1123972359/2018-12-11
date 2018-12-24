@@ -15,10 +15,18 @@ class Response extends \think\Response
     private $reasonPhrase = 'OK';
 
 
-    public function getInstance()
+    public static function create($data = '', $type = '', $code = 200, array $header = [], $options = [])
     {
-        return $this;
+        $class = false !== strpos($type, '\\') ? $type : '\\think\\response\\' . ucfirst(strtolower($type));
+        if (class_exists($class)) {
+            $response = new $class($data, $code, $header, $options);
+        } else {
+            $response = new static($data, $code, $header, $options);
+        }
+
+        return $response;
     }
+
 
     public function getStatusCode()
     {
@@ -47,5 +55,6 @@ class Response extends \think\Response
         // TODO: Implement getReasonPhrase() method.
         return $this->reasonPhrase;
     }
+
 
 }

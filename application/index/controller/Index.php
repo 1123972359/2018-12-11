@@ -2,6 +2,7 @@
 namespace app\index\controller;
 
 use app\Utility\Response;
+use app\Utility\Status;
 use think\Controller;
 use think\View;
 use think\Db;
@@ -11,10 +12,10 @@ use think\Request;
 class Index extends Controller
 {
     public function index()
-    {   
-    	$view = new View();
+    {
+        $view = new View();
 		return $view->fetch('index');
-		// return json_encode('inde555x');
+//		// return json_encode('inde555x');
     }
 
     public function vote_load () {
@@ -169,6 +170,6 @@ class Index extends Controller
 
     public function test()
     {
-        Response::create();
+
     }
 }
