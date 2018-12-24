@@ -140,6 +140,7 @@ var personal = new Vue({
 				},
 				success(res){
 					var res = JSON.parse(res);
+					console.log(res);
 					if(res.status != 200){
 						return;
 					}
@@ -147,7 +148,7 @@ var personal = new Vue({
 					var arr2 = [];
 					var draft_arr = [];
 					for(var i = 0; i < res.data.length; i++){
-						if(res.data[i].is_draft === "0"){
+						if(res.data[i].is_draft == "0"){
 							arr.push(res.data[i]);
 						}else{
 							draft_arr.push(res.data[i]);
