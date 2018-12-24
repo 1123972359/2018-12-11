@@ -13,6 +13,48 @@ class BokeEditor extends controller
 		return $view -> fetch('bokeEditor');
 	}
 
+	public function toBokeInfo(){
+		$view = new View();
+
+		$request = Request::instance() -> get();
+
+		if(!$request){
+			$msg = array('err_code' => 404, 'err_msg' => 'request fails');
+			dump($msg);
+			exit();
+		}
+
+		if(!$request['id']){
+			$msg = array('err_code' => 405, 'err_msg' => 'id not exists');
+			dump($msg);
+			exit();
+		}
+
+		$isComeFromPerson = $request['isComeFromPerson'];
+
+		$data = Db::table('tb_boke') -> where(array('id' => $request['id'])) -> find();
+
+		return $view -> fetch('bokeInfo', ['id' => $request['id'], 'isComeFromPerson' => $isComeFromPerson, 'data' => $data]);
+	}
+
+	public function bokeInfo(){
+		$request = Request::instance() -> get();
+
+		$data = Db::table('tb_boke') -> where(array('id' => $request['id'])) -> find();
+
+		if(!$data){
+			$msg = array('err_code' => 406, 'err_msg' => 'data not exists');
+			return json_encode($msg);
+		}
+
+		$user = Db::table('tb_user') -> where(array('id' => $data['uid'])) -> field('nickname') -> find();
+
+		$data['nickname'] = $user['nickname'];
+
+		$msg = array('err_code' => 200, 'err_msg' => 'success', 'data' => $data);
+		return json_encode($msg);
+	}
+
 	public function upload(){
 	    $file = request()->file('image');
 	    if($file){

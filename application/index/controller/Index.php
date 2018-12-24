@@ -18,6 +18,17 @@ class Index extends Controller
 //		// return json_encode('inde555x');
     }
 
+    public function boke_load () {
+        $boke = Db::table('tb_boke') -> limit(10) -> select();
+        if(!$boke){
+            $status = array('status' => 404, 'msg' => '暂无');
+            return json_encode($status);
+        }
+
+        $status = array('status' => 200, 'msg' => 'success', 'data' => $boke);
+        return json_encode($status);
+    }
+
     public function vote_load () {
     	$vote = Db::table('tb_vote') -> where('open', 1) -> find();
     	if(!$vote){

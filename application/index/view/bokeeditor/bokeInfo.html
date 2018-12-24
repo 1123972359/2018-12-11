@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>不定时话题</title>
+</head>
+<style type="text/css">
+.content{
+	padding:0 15px;
+	margin-top: 60px;
+}
+.toolbar{
+	padding:0 15px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	display: flex;
+	flex-wrap: wrap;
+}
+.text{
+	padding:0 15px;
+	min-height: 300px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+</style>
+<body>
+	{include file="public/header" /}
+
+	<div class="container" id="bokeInfo" style="position: relative;top: 69px;">
+		<ul class="breadcrumb" style="position: relative;top: -9px;margin-bottom: 0px;">
+			<li><a href="/index/index/index">首页</a></li>
+			<li v-if="isComeFromPerson == 1 ? true : false"><a href="/index/Personal/personal_index">个人中心</a></li>
+			<li class="active">博客详情</li>
+		</ul>
+
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 id="boke_title" class="panel-title">
+					
+				</h3>
+			</div>
+			<div id="boke_content" class="panel-body">
+				
+			</div>
+			<div class="panel-footer" style="font-size: 10px;"><div style="text-align: left;">作者：{{boke_nickname}}<br>初次发布时间：{{boke_create_time}}<br>最近更新时间：{{boke_update_time}}</div></div>
+		</div>
+
+		<div style="width: 100%;margin: 0 auto;color: #999999;font-size: 12px;margin-top: 10px;">
+			<div style="text-align: center;">©2018 不定时话题 粤ICP备18143213号</div>
+		</div>
+	</div>
+
+</body>
+
+<script type="text/javascript" src="__JS__/wangEditor.min.js"></script>
+<script type="text/javascript">
+var bokeInfo = new Vue({
+	el: '#bokeInfo',
+	data:{
+		boke_create_time: '',
+		boke_update_time: '',
+		boke_nickname:'',
+		isComeFromPerson: '{$isComeFromPerson}',
+	},
+	created(){
+		var that = this;
+		$.ajax({
+			methods: 'get',
+			url: '/index/bokeeditor/bokeInfo',
+			data:{ id:'{$id}' },
+			success:res=>{
+				console.log(JSON.parse(res));
+				let re = JSON.parse(res);
+				document.getElementById('boke_title').innerHTML = re.data.title;
+				document.getElementById('boke_content').innerHTML = re.data.content;
+				that.boke_nickname = re.data.nickname;
+				that.boke_create_time = re.data.create_time;
+				that.boke_update_time = re.data.update_time;
+			}
+		})
+		
+	},
+	mounted(){
+
+	},
+	methods:{
+
+	}
+})
+</script>
+</html>
